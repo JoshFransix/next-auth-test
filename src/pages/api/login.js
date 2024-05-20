@@ -15,9 +15,9 @@ export async function POST(request) {
       Created: currentDate,
     };
 
-    return NextResponse.json({ data: result }, { status: 200 });
+    return res.status(200).json({ data: result });
   } catch (error) {
     console.log(request.body?.locked);
-    return NextResponse.json({ error: "Internal Server Error" });
+    return res.json({ error: "Internal Server Error" });
   }
 }

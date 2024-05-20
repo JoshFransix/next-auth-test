@@ -1,7 +1,7 @@
 const { createHash } = require("node:crypto");
 import { NextResponse } from "next/server";
 
-export async function POST(request) {
+export default async function POST(request, res) {
   try {
     console.log("Before", request.body?.locked, request.bodyUsed);
 
@@ -16,9 +16,9 @@ export async function POST(request) {
       Email: email,
     };
 
-    return NextResponse.json({ data: result }, { status: 200 });
+    return res.status(200).json({ data: result });
   } catch (error) {
     console.log(request.body?.locked);
-    return NextResponse.json({ error: "Internal Server Error" });
+    return res.json({ error: "Internal Server Error" });
   }
 }
