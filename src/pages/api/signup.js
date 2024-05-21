@@ -1,24 +1,32 @@
-const { createHash } = require("node:crypto");
-import { NextResponse } from "next/server";
+import clientPromise from "../../lib/mongodb";
+import Cookies from "cookies";
+const { createHash } = require("crypto");
 
-export default async function POST(request, res) {
-  try {
-    console.log("Before", request.body?.locked, request.bodyUsed);
+export default async function handler(req, res) {
+  const username = req.body["username"];
+  const password = req.body["password"];
+  const email = req.body["email"];
 
-    const { username, password, email } = await request.json();
-
-    console.log("After", request.body?.locked, request.bodyUsed);
-    const currentDate = new Date().toUTCString();
-
-    const result = {
-      Username: username,
-      Created: currentDate,
-      Email: email,
-    };
-
-    return res.status(200).json({ data: result });
-  } catch (error) {
-    console.log(request.body?.locked);
-    return res.json({ error: "Internal Server Error" });
+  const client = await clientPromise;
+  const db = client.db("nextjs-auth-test");
+  const users = await db
+    .collection("users")
+    .find({ Username: username })
+    .toArray();
+  if (users.length > 0) {
+    return res.json({
+      status: 400,
+      message: "A user already has this username",
+    });
   }
+  const password_hash = createHash("sha256").update(password).digest("hex");
+  const currentDate = new Date().toUTCString();
+  const bodyObject = {
+    Username: username,
+    Password: password_hash,
+    Created: currentDate,
+  };
+  await db.collection("users").insertOne(bodyObject);
+  cookies.set("user", bodyObject);
+  return res.json({ status: 200, data: bodyObject });
 }

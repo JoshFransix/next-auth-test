@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { getCookie } from "cookies-next";
 export default function Home() {
   const [isLogin, setIsLogin] = useState(true);
   const [userName, setUserName] = useState("");
@@ -7,15 +8,10 @@ export default function Home() {
   const [email, setEmail] = useState(null);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const { body } = await fetch("/api/hello");
-    // console.log(body);
     if (!isLogin) {
       try {
-        const response = await fetch("/api/signup", {
+        const response = await fetch("http://localhost:3000/api/signup", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             username: userName,
             password: password,
@@ -23,39 +19,41 @@ export default function Home() {
           }),
         });
 
-        if (response.ok) {
-          console.log("form successfully submitted");
-          // Handle success - maybe show a notification or redirect the user
-        } else {
-          console.log("submission failed");
-          // Handle error - show a notification or handle error
-        }
+        const data = await response.json();
+        console.log(data);
+
+        // if (response.ok) {
+        //   console.log("form successfully submitted");
+        //   // Handle success - maybe show a notification or redirect the user
+        // } else {
+        //   console.log("submission failed");
+        //   // Handle error - show a notification or handle error
+        // }
       } catch (error) {
         return error;
       }
     } else {
-      try {
-        const response = await fetch("/api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: userName,
-            password: password,
-          }),
-        });
+      const response = await fetch("http://localhost:3000/api/login", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // body: JSON.stringify({
+        //   username: userName,
+        //   password: password,
+        // }),
+      });
 
-        if (response.ok) {
-          console.log("form successfully submitted");
-          // Handle success - maybe show a notification or redirect the user
-        } else {
-          console.log("submission failed");
-          // Handle error - show a notification or handle error
-        }
-      } catch (error) {
-        return error;
-      }
+      const data = await response.json();
+      console.log(data);
+
+      // if (response.ok) {
+      //   console.log("form successfully submitted");
+      //   // Handle success - maybe show a notification or redirect the user
+      // } else {
+      //   console.log("submission failed");
+      //   // Handle error - show a notification or handle error
+      // }
     }
   };
   return (
@@ -78,7 +76,7 @@ export default function Home() {
           Sign Up{" "}
         </h3>
       </div>
-      <form onClick={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         {isLogin ? (
           <div className="transition-all w-full">
             <h1 className="font-semibold text-xl text-blue-600">
@@ -180,4 +178,14 @@ export default function Home() {
       </form>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  const req = context.req;
+  const res = context.res;
+  var user = getCookie("user", { req, res });
+  if (user == undefined) {
+    user = false;
+  }
+  return { props: { user } };
 }
