@@ -8,7 +8,6 @@ export default async function handler(req, res) {
   const password = formData.password;
   const email = formData.email;
 
-  // console.log('loggg', JSON.parse(req.body).username);
 
   const client = await clientPromise;
   const db = client.db("nextjs-auth-test");
@@ -22,6 +21,6 @@ export default async function handler(req, res) {
     Created: currentDate,
   };
   await db.collection("users").insertOne(bodyObject);
-  cookies.set("user", bodyObject);
+  // cookies.set("user", bodyObject);
   return res.json({ status: 200, data: bodyObject });
 }

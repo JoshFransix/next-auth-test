@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getCookie } from "cookies-next";
 export default function Home() {
+  const [user, setUser] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -19,44 +20,46 @@ export default function Home() {
           }),
         });
 
-        const data = await response.json();
+        const { data } = await response.json();
+        const main = JSON.stringify(data);
         console.log(data);
-
-        // if (response.ok) {
-        //   console.log("form successfully submitted");
-        //   // Handle success - maybe show a notification or redirect the user
-        // } else {
-        //   console.log("submission failed");
-        //   // Handle error - show a notification or handle error
-        // }
+        setUser(main);
+        localStorage.setItem("user", main);
       } catch (error) {
         return error;
       }
     } else {
       const response = await fetch("/api/login", {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        // body: JSON.stringify({
-        //   username: userName,
-        //   password: password,
-        // }),
+        body: JSON.stringify({
+          username: userName,
+          password: password,
+        }),
       });
 
-      const data = await response.json();
+      const { data } = await response.json();
       console.log(data);
-
-      // if (response.ok) {
-      //   console.log("form successfully submitted");
-      //   // Handle success - maybe show a notification or redirect the user
-      // } else {
-      //   console.log("submission failed");
-      //   // Handle error - show a notification or handle error
-      // }
     }
   };
-  return (
+
+  const logout = () => {
+    localStorage.clear()
+    setUser(null)
+  }
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user')
+    if(storedUser){
+      setUser(JSON.parse(storedUser))
+      console.log(user)
+    }
+  },[])
+  return user? <div>Hello {user?.Username} <br />
+  <button onClick={logout}>Logout</button>
+  </div> :(
     <div className="flex flex-col justify-center items-center mx-auto h-[80vh] w-[700px]">
       <div className="flex items-center my-6 transition-all">
         <h3
