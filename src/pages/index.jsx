@@ -10,7 +10,7 @@ export default function Home() {
     e.preventDefault();
     if (!isLogin) {
       try {
-        const response = await fetch("http://localhost:3000/api/signup", {
+        const response = await fetch("/api/signup", {
           method: "POST",
           body: JSON.stringify({
             username: userName,
@@ -33,7 +33,7 @@ export default function Home() {
         return error;
       }
     } else {
-      const response = await fetch("http://localhost:3000/api/login", {
+      const response = await fetch("/api/login", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
