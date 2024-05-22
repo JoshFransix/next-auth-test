@@ -3,11 +3,10 @@ import Cookies from "cookies";
 const { createHash } = require("crypto");
 
 export default async function handler(req, res) {
-  const formData = JSON.parse(req.body);
+  const formData = req.body;
   const username = formData.username;
   const password = formData.password;
   const email = formData.email;
-
 
   const client = await clientPromise;
   const db = client.db("nextjs-auth-test");

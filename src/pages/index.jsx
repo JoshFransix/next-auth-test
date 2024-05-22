@@ -13,6 +13,9 @@ export default function Home() {
       try {
         const response = await fetch("/api/signup", {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             username: userName,
             password: password,
@@ -21,10 +24,9 @@ export default function Home() {
         });
 
         const { data } = await response.json();
-        const main = JSON.stringify(data);
         console.log(data);
-        setUser(main);
-        localStorage.setItem("user", main);
+        setUser(data);
+        localStorage.setItem("user", data);
       } catch (error) {
         return error;
       }
@@ -40,29 +42,38 @@ export default function Home() {
         }),
       });
 
-      const { data } = await response.json();
-      const main = JSON.stringify(data);
-      console.log(data);
-      setUser(data);
+      const data = await response.json();
+      const message = data?.message;
+      if (message) {
+        console.error(data.message);
+      } else {
+        const main = JSON.stringify(data.data);
+        console.log(data.data);
+        setUser(data.data);
         localStorage.setItem("user", main);
+      }
     }
   };
 
   const logout = () => {
-    localStorage.clear()
-    setUser(null)
-  }
+    localStorage.clear();
+    setUser(null);
+  };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    if(storedUser){
-      setUser(JSON.parse(storedUser))
-      console.log(user)
+    const storedUser = localStorage.getItem("user");
+    if (storedUser !== null) {
+      setUser(storedUser);
+      console.log(storedUser);
+      console.log(user);
     }
-  },[])
-  return user? <div>Hello {user?.Username} <br />
-  <button onClick={logout}>Logout</button>
-  </div> :(
+  }, []);
+  return user ? (
+    <div>
+      Hello {user.Username} <br />
+      <button onClick={logout}>Logout</button>
+    </div>
+  ) : (
     <div className="flex flex-col justify-center items-center mx-auto h-[80vh] w-[700px]">
       <div className="flex items-center my-6 transition-all">
         <h3
