@@ -41,7 +41,10 @@ export default function Home() {
       });
 
       const { data } = await response.json();
+      const main = JSON.stringify(data);
       console.log(data);
+      setUser(data);
+        localStorage.setItem("user", main);
     }
   };
 

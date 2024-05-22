@@ -3,7 +3,8 @@ import clientPromise from "../../lib/mongodb";
 const { createHash } = require("crypto");
 
 export default async function handler(req, res) {
-  const formData = JSON.parse(req.body);
+  const formData = req.body;
+  console.log(formData)
   const username = formData.username;
   const guess = formData.password;
   const client = await clientPromise;
